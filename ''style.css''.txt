@@ -1,0 +1,103 @@
+body {
+    margin:0;
+    font-family:Arial;
+    background: radial-gradient(circle,#000428,#004e92);
+    color:white;
+}
+
+/* Intro */
+.intro {
+    height:100vh;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    font-size:30px;
+    cursor:pointer;
+}
+
+/* Login */
+.start-screen {
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    height:100vh;
+}
+
+input {
+    padding:10px;
+    margin:10px;
+    border-radius:10px;
+    border:none;
+}
+
+button {
+    padding:10px;
+    border-radius:20px;
+    border:none;
+    cursor:pointer;
+}
+
+/* Layout */
+.container {
+    display:flex;
+}
+
+.app {
+    flex:2;
+    padding:20px;
+    text-align:center;
+}
+
+.ladder {
+    flex:1;
+    background:#111;
+}
+
+.ladder div {
+    padding:10px;
+    margin:5px;
+    background:#222;
+}
+
+.active {
+    background:orange;
+    color:black;
+}
+
+/* Question */
+.question {
+    margin:20px 0;
+    font-size:18px;
+}
+
+/* Options */
+.options button {
+    width:100%;
+    margin:5px;
+    background:#1e1e60;
+    color:white;
+}
+
+.correct {background:green;}
+.wrong {background:red;}
+
+/* Lifelines */
+.lifelines button {
+    margin:10px;
+    background:gold;
+}
+
+/* Poll */
+.poll {
+    margin-top:10px;
+    background:#222;
+    padding:10px;
+    display:none;
+}
+
+/* Mobile */
+@media(max-width:700px){
+    .container{flex-direction:column;}
+}

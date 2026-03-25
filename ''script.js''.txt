@@ -1,0 +1,163 @@
+const questions = [
+{question:"भारत की राजधानी?",options:["मुंबई","दिल्ली","कोलकाता","चेन्नई"],answer:1},
+{question:"2+2=?",options:["3","4","5","6"],answer:1},
+{question:"लाल ग्रह?",options:["पृथ्वी","मंगल","शुक्र","शनि"],answer:1},
+{question:"राष्ट्रीय पशु?",options:["शेर","हाथी","बाघ","घोड़ा"],answer:2},
+{question:"ताज महल कहाँ?",options:["दिल्ली","मुंबई","आगरा","जयपुर"],answer:2},
+{question:"आजादी कब?",options:["1945","1947","1950","1930"],answer:1},
+{question:"ऑक्सीजन क्या है?",options:["गैस","धातु","तरल","ठोस"],answer:0},
+{question:"सूरज दिशा?",options:["उत्तर","दक्षिण","पूर्व","पश्चिम"],answer:2}
+];
+
+let current=0,score=0,time=15,timer,player="";
+let usedQuestions=[];
+
+// Sounds
+const correctSound=new Audio("https://www.soundjay.com/buttons/sounds/button-3.mp3");
+const wrongSound=new Audio("https://www.soundjay.com/buttons/sounds/button-10.mp3");
+
+// Voice
+function speak(text){
+    let s=new SpeechSynthesisUtterance(text);
+    s.lang="hi-IN";
+    speechSynthesis.speak(s);
+}
+
+// Intro
+document.getElementById("intro").onclick=()=>{
+    document.getElementById("intro").style.display="none";
+    document.getElementById("startScreen").style.display="flex";
+};
+
+// Start
+function startGame(){
+    player=document.getElementById("playerName").value;
+    if(!player){alert("नाम डालो");return;}
+
+    document.getElementById("startScreen").style.display="none";
+    document.getElementById("gameScreen").style.display="flex";
+
+    document.getElementById("welcomeText").innerText="Welcome "+player;
+    speak("स्वागत है "+player+" Lucky के गेम में");
+
+    setTimeout(loadQuestion,2000);
+}
+
+// Random Question
+function loadQuestion(){
+    clearInterval(timer);
+    time=15;
+    document.getElementById("timer").innerText=time;
+
+    if(usedQuestions.length===questions.length){
+        endGame();
+        return;
+    }
+
+    let randomIndex;
+    do{
+        randomIndex=Math.floor(Math.random()*questions.length);
+    }while(usedQuestions.includes(randomIndex));
+
+    usedQuestions.push(randomIndex);
+    current=randomIndex;
+
+    let q=questions[current];
+    document.getElementById("question").innerText=q.question;
+
+    let optDiv=document.getElementById("options");
+    optDiv.innerHTML="";
+
+    q.options.forEach((o,i)=>{
+        let btn=document.createElement("button");
+        btn.innerText=o;
+        btn.onclick=()=>checkAnswer(i);
+        optDiv.appendChild(btn);
+    });
+
+    highlight();
+    startTimer();
+}
+
+// Ladder
+function highlight(){
+    let l=document.querySelectorAll(".ladder div");
+    l.forEach(e=>e.classList.remove("active"));
+    l[l.length-1-usedQuestions.length+1]?.classList.add("active");
+}
+
+// Timer
+function startTimer(){
+    timer=setInterval(()=>{
+        time--;
+        document.getElementById("timer").innerText=time;
+        if(time==0){clearInterval(timer);nextQuestion();}
+    },1000);
+}
+
+// Answer
+function checkAnswer(sel){
+    clearInterval(timer);
+    let correct=questions[current].answer;
+
+    let btns=document.querySelectorAll(".options button");
+    btns.forEach((b,i)=>{
+        if(i==correct)b.classList.add("correct");
+        if(i==sel && i!=correct)b.classList.add("wrong");
+        b.disabled=true;
+    });
+
+    if(sel==correct){
+        score+=1000;
+        document.getElementById("score").innerText=score;
+        correctSound.play();
+        speak("सही जवाब");
+    } else {
+        wrongSound.play();
+        speak("गलत जवाब");
+    }
+
+    setTimeout(nextQuestion,2000);
+}
+
+// Next
+function nextQuestion(){
+    loadQuestion();
+}
+
+// End
+function endGame(){
+    speak("खेल समाप्त");
+    setTimeout(()=>{
+        speak("अगर ये गेम अच्छा लगे तो हमें रेटिंग जरूर दें");
+    },2000);
+
+    document.querySelector(".app").innerHTML=
+    `<h2>🎉 Game Over</h2>
+     <h3>${player} Score: ${score}</h3>
+     <p>⭐ अगर ये गेम अच्छा लगे तो हमें रेटिंग जरूर दें</p>`;
+}
+
+// Lifelines
+function use5050(){
+    let correct=questions[current].answer;
+    let btns=document.querySelectorAll(".options button");
+    let removed=0;
+
+    btns.forEach((b,i)=>{
+        if(i!=correct && removed<2){
+            b.style.display="none";
+            removed++;
+        }
+    });
+}
+
+function audiencePoll(){
+    let poll=document.getElementById("pollBox");
+    poll.style.display="block";
+
+    let p=[rand(),rand(),rand(),rand()];
+    poll.innerHTML=`A:${p[0]}%<br>B:${p[1]}%<br>C:${p[2]}%<br>D:${p[3]}%`;
+}
+
+function rand(){return Math.floor(Math.random()*50);}
